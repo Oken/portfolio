@@ -31,68 +31,6 @@ export default function About() {
             alignItems: "center",
           }}
         >
-          {/* Image */}
-          <div style={{ position: "relative", maxWidth: 420 }}>
-            <div
-              style={{
-                position: "absolute",
-                top: -14,
-                left: -14,
-                width: "100%",
-                height: "100%",
-                border: "2px solid #c8a04a",
-                borderRadius: 14,
-                zIndex: 0,
-              }}
-            />
-            <div
-              style={{
-                position: "relative",
-                zIndex: 1,
-                borderRadius: 10,
-                overflow: "hidden",
-                aspectRatio: "4/5",
-              }}
-            >
-              <Image
-                src="/Dr_CHINONSO_OKEN_e.jpg"
-                // src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600&q=80&auto=format&fit=crop"
-                alt="DR CHINONSO OKEN"
-                fill
-                style={{ objectFit: "cover" }}
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 18,
-                  left: 18,
-                  zIndex: 2,
-                  background: "rgba(11,23,38,0.92)",
-                  backdropFilter: "blur(8px)",
-                  borderRadius: 10,
-                  padding: "12px 16px",
-                  border: "1px solid rgba(200,160,74,0.3)",
-                }}
-              >
-                <p
-                  style={{
-                    color: "#c8a04a",
-                    fontSize: 10,
-                    letterSpacing: "0.12em",
-                    textTransform: "uppercase",
-                    marginBottom: 2,
-                  }}
-                >
-                  Based in
-                </p>
-                <p style={{ color: "white", fontSize: 14, fontWeight: 500 }}>
-                  Ife Central, Osun 🇳🇬
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* Text */}
           <div>
             <p
@@ -217,6 +155,68 @@ export default function About() {
                   </p>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Image */}
+          <div style={{ position: "relative", maxWidth: 420 }}>
+            <div
+              style={{
+                position: "absolute",
+                top: -14,
+                right: -14,
+                width: "100%",
+                height: "100%",
+                border: "2px solid #c8a04a",
+                borderRadius: 14,
+                zIndex: 0,
+              }}
+            />
+            <div
+              style={{
+                position: "relative",
+                zIndex: 1,
+                borderRadius: 10,
+                overflow: "hidden",
+                aspectRatio: "4/5",
+              }}
+            >
+              <Image
+                src="/Dr_CHINONSO_OKEN_ed.jpg"
+                // src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600&q=80&auto=format&fit=crop"
+                alt="DR CHINONSO OKEN"
+                fill
+                style={{ objectFit: "cover" }}
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 18,
+                  left: 18,
+                  zIndex: 2,
+                  background: "rgba(11,23,38,0.92)",
+                  backdropFilter: "blur(8px)",
+                  borderRadius: 10,
+                  padding: "12px 16px",
+                  border: "1px solid rgba(200,160,74,0.3)",
+                }}
+              >
+                <p
+                  style={{
+                    color: "#c8a04a",
+                    fontSize: 10,
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    marginBottom: 2,
+                  }}
+                >
+                  Based in
+                </p>
+                <p style={{ color: "white", fontSize: 14, fontWeight: 500 }}>
+                  Ife Central, Osun 🇳🇬
+                </p>
+              </div>
             </div>
           </div>
         </div>

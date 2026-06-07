@@ -56,7 +56,7 @@ export default function Footer() {
             fontWeight: 300,
           }}
         >
-          6+ years of full-stack engineering. An MBBS from OAU. The founder of a
+          6+ years of full-stack engineering. A Medical DOctor from OAU. The founder of a
           software company. I bring a rare combination to health-tech teams,
           digital health startups, and research projects.
         </p>

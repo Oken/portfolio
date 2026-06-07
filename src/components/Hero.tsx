@@ -60,7 +60,8 @@ export default function Hero() {
             position: "absolute",
             inset: 0,
             zIndex: 0,
-            backgroundImage: `url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1800&q=70')`,
+            // backgroundImage: `url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1800&q=70')`,
+            backgroundImage: `url('https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=1600&q=80')`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             opacity: 0.08,
@@ -218,6 +219,21 @@ export default function Hero() {
               </span>
             </div>
 
+            {/* Moving ECG pulse wave complex */}
+            {/* <div className="w-2/4 left-0 right-0 h-10 opacity-60 z-20 pointer-events-none">
+              <svg viewBox="0 0 100 30" className="w-full h-full">
+                <path
+                  d="M 0,15 L 20,15 L 25,5 L 28,25 L 32,15 L 50,15 L 55,2 L 60,28 L 65,15 L 100,15"
+                  fill="none"
+                  stroke="#10B981"
+                  strokeWidth="1.2"
+                  className="animate-[dash_3s_linear_infinite]"
+                  strokeDasharray="100"
+                  strokeDashoffset="100"
+                />
+              </svg>
+            </div> */}
+
             {/* Tagline */}
             <p
               style={{
@@ -229,7 +245,7 @@ export default function Hero() {
                 marginBottom: 40,
               }}
             >
-              MBBS candidate at OAU · Senior Full-Stack Engineer · Founder of
+              OAU Medical Graduate · Senior Full-Stack Engineer · Founder of
               Clivoken Systems — building at the intersection of clinical care
               and technology.
             </p>

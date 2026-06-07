@@ -7,7 +7,7 @@ const timeline = [
     date: "2018 – 2026",
     title: "MBBS — Obafemi Awolowo University",
     institution: "OAU, Ife Central, Osun",
-    desc: "Six-year medical programme covering Internal Medicine, Surgery, Paediatrics, Obstetrics & Gynaecology, Psychiatry and Community Health. Expected graduation: April 2026.",
+    desc: "Six-year medical programme covering Internal Medicine, Surgery, Paediatrics, Obstetrics & Gynaecology, Psychiatry and Community Health.",
     current: true,
   },
   {
@@ -25,7 +25,7 @@ const timeline = [
     current: false,
   },
   {
-    date: "2025 - 2026",
+    date: "2024 - 2026",
     title: "Clinical Research Assistant & Methodologist",
     institution: "Academic / Clinical Study",
     desc: "Designed research protocols compliant with Good Clinical Practice (GCP) and ethical standards. Conducted systematic literature reviews and synthesised complex datasets to support evidence-based medicine.",
