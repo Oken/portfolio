@@ -136,22 +136,14 @@ function VideoCard({ project }: { project: (typeof projects)[0] }) {
       }}
       onMouseEnter={handlePlay}
       onMouseLeave={handlePause}
-      // onClick={() => {
-      //   // Arguments: (URL, target, windowFeatures)
-      //   window.open(
-      //     project.liveUrl || project.githubUrl,
-      //     "_blank",
-      //     "noopener,noreferrer",
-      //   );
-      // }}
     >
       {/* Invisible link overlay */}
-      <a
+      {/* <a
         href={project.liveUrl || project.githubUrl}
         target="_blank"
         rel="noopener noreferrer"
         style={{ position: "absolute", inset: 0, zIndex: 5 }}
-      />
+      /> */}
       {/* Media */}
       <div
         style={{
