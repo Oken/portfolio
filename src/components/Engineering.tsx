@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, MouseEvent } from "react";
 import { useReveal } from "@/lib/useReveal";
 
 const projects = [
@@ -79,48 +79,56 @@ function VideoCard({ project }: { project: (typeof projects)[0] }) {
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handlePlay = () => {
-    if (!videoError && vidRef.current) {
-      // Clear any existing timeouts just in case
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-      playPromiseRef.current = vidRef.current.play();
-
-      // Set a 300ms watchdog timer. If the video doesn't transition out of
-      // the loading state by then, assume the link is dead/stalled.
-      timeoutRef.current = setTimeout(() => {
-        if (vidRef.current && vidRef.current.paused) {
-          console.warn(`Video stalled on load for: ${project.title}`);
+  const handlePlay = (e: MouseEvent<HTMLDivElement>) => {
+      e.currentTarget.style.borderColor = "rgba(200,160,74,0.3)";
+      e.currentTarget.style.transform = "translateY(-4px)";
+      e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.4)";
+  
+      if (!videoError && vidRef.current) {
+        // Clear any existing timeouts just in case
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  
+        playPromiseRef.current = vidRef.current.play();
+  
+        // Set a 300ms watchdog timer. If the video doesn't transition out of
+        // the loading state by then, assume the link is dead/stalled.
+        timeoutRef.current = setTimeout(() => {
+          if (vidRef.current && vidRef.current.paused) {
+            console.warn(`Video stalled on load for: ${project.title}`);
+            setVideoError(true);
+          }
+        }, 300);
+  
+        playPromiseRef.current?.catch((error) => {
           setVideoError(true);
-        }
-      }, 300);
-
-      playPromiseRef.current?.catch((error) => {
-        setVideoError(true);
-      });
-    }
-  };
-
-  const handlePause = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-
-    if (vidRef.current && !videoError) {
-      if (playPromiseRef.current !== null) {
-        playPromiseRef.current
-          .then(() => {
-            // Only pause if the video successfully resolved its play state
-            vidRef.current?.pause();
-            if (vidRef.current) vidRef.current.currentTime = 0;
-          })
-          .catch(() => {
-            /* Silence caught promise errors */
-          });
-      } else {
-        vidRef.current.pause();
-        vidRef.current.currentTime = 0;
+        });
       }
-    }
-  };
+    };
+  
+    const handlePause = (e: MouseEvent<HTMLDivElement>) => {
+      e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+      e.currentTarget.style.transform = "none";
+      e.currentTarget.style.boxShadow = "none";
+  
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  
+      if (vidRef.current && !videoError) {
+        if (playPromiseRef.current !== null) {
+          playPromiseRef.current
+            .then(() => {
+              // Only pause if the video successfully resolved its play state
+              vidRef.current?.pause();
+              if (vidRef.current) vidRef.current.currentTime = 0;
+            })
+            .catch(() => {
+              /* Silence caught promise errors */
+            });
+        } else {
+          vidRef.current.pause();
+          vidRef.current.currentTime = 0;
+        }
+      }
+    };
 
   return (
     <div

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, MouseEvent } from "react";
 import Link from "next/link";
 
 const allProjects = [
@@ -128,6 +128,64 @@ function ProjectCard({ project }: { project: (typeof allProjects)[0] }) {
   const vidRef = useRef<HTMLVideoElement>(null);
   const s = statusColors[project.status];
 
+  const [videoError, setVideoError] = useState(false);
+
+  // Track the pending play promise to prevent collision on mouse leave
+  const playPromiseRef = useRef<Promise<void> | null>(null);
+
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handlePlay = (e: MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.borderColor = "rgba(200,160,74,0.3)";
+    e.currentTarget.style.transform = "translateY(-4px)";
+    e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.4)";
+
+    if (!videoError && vidRef.current) {
+      // Clear any existing timeouts just in case
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+      playPromiseRef.current = vidRef.current.play();
+
+      // Set a 300ms watchdog timer. If the video doesn't transition out of
+      // the loading state by then, assume the link is dead/stalled.
+      timeoutRef.current = setTimeout(() => {
+        if (vidRef.current && vidRef.current.paused) {
+          console.warn(`Video stalled on load for: ${project.title}`);
+          setVideoError(true);
+        }
+      }, 300);
+
+      playPromiseRef.current?.catch((error) => {
+        setVideoError(true);
+      });
+    }
+  };
+
+  const handlePause = (e: MouseEvent<HTMLDivElement>) => {
+    e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+    e.currentTarget.style.transform = "none";
+    e.currentTarget.style.boxShadow = "none";
+
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+    if (vidRef.current && !videoError) {
+      if (playPromiseRef.current !== null) {
+        playPromiseRef.current
+          .then(() => {
+            // Only pause if the video successfully resolved its play state
+            vidRef.current?.pause();
+            if (vidRef.current) vidRef.current.currentTime = 0;
+          })
+          .catch(() => {
+            /* Silence caught promise errors */
+          });
+      } else {
+        vidRef.current.pause();
+        vidRef.current.currentTime = 0;
+      }
+    }
+  };
+
   return (
     <div
       style={{
@@ -137,21 +195,23 @@ function ProjectCard({ project }: { project: (typeof allProjects)[0] }) {
         overflow: "hidden",
         transition: "border-color 0.25s, transform 0.25s, box-shadow 0.25s",
       }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = "rgba(200,160,74,0.3)";
-        e.currentTarget.style.transform = "translateY(-4px)";
-        e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.4)";
-        vidRef.current?.play();
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
-        e.currentTarget.style.transform = "none";
-        e.currentTarget.style.boxShadow = "none";
-        if (vidRef.current) {
-          vidRef.current.pause();
-          vidRef.current.currentTime = 0;
-        }
-      }}
+      // onMouseEnter={(e) => {
+      //   e.currentTarget.style.borderColor = "rgba(200,160,74,0.3)";
+      //   e.currentTarget.style.transform = "translateY(-4px)";
+      //   e.currentTarget.style.boxShadow = "0 20px 60px rgba(0,0,0,0.4)";
+      //   vidRef.current?.play();
+      // }}
+      onMouseEnter={handlePlay}
+      // onMouseLeave={(e) => {
+      //   e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)";
+      //   e.currentTarget.style.transform = "none";
+      //   e.currentTarget.style.boxShadow = "none";
+      //   if (vidRef.current) {
+      //     vidRef.current.pause();
+      //     vidRef.current.currentTime = 0;
+      //   }
+      // }}
+      onMouseLeave={handlePause}
     >
       {/* Media */}
       <div
@@ -174,26 +234,49 @@ function ProjectCard({ project }: { project: (typeof allProjects)[0] }) {
             zIndex: 1,
           }}
         />
-        <video
-          ref={vidRef}
-          muted
-          loop
-          playsInline
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            zIndex: 2,
-            opacity: 0,
-            transition: "opacity 0.5s",
-          }}
-          onPlay={(e) => (e.currentTarget.style.opacity = "1")}
-          onPause={(e) => (e.currentTarget.style.opacity = "0")}
-        >
-          <source src={project.videoSrc} type="video/mp4" />
-        </video>
+        {/* Video Element with Error Handling */}
+        {!videoError && (
+          <video
+            ref={vidRef}
+            muted
+            loop
+            playsInline
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              zIndex: 2,
+              opacity: 0,
+              transition: "opacity 0.5s",
+            }}
+            // If it actually manages to play data, clear our safety timeout
+            onPlaying={(e) => {
+              if (timeoutRef.current) clearTimeout(timeoutRef.current);
+              e.currentTarget.style.opacity = "1";
+            }}
+            onPause={(e) => (e.currentTarget.style.opacity = "0")}
+            // 💡 THE SECRET SAUCE: Triggers if the browser gets stuck buffering an incorrect link
+            onWaiting={() => {
+              // Give it a brief moment, then trip the fallback if it stays stuck
+              timeoutRef.current = setTimeout(() => {
+                setVideoError(true);
+                console.warn(
+                  `Video failed to load for project: ${project.title}`,
+                );
+              }, 200);
+            }}
+            onError={() => {
+              console.warn(
+                `Video failed to load for project: ${project.title}`,
+              );
+              setVideoError(true);
+            }}
+          >
+            <source src={project.videoSrc} type="video/mp4" />
+          </video>
+        )}
         <div
           style={{
             position: "absolute",
@@ -274,27 +357,30 @@ function ProjectCard({ project }: { project: (typeof allProjects)[0] }) {
           </span>
         </div>
 
-        <div
-          style={{
-            position: "absolute",
-            bottom: 14,
-            right: 14,
-            zIndex: 4,
-            background: "rgba(0,0,0,0.55)",
-            borderRadius: 5,
-            padding: "3px 8px",
-          }}
-        >
-          <span
+        {/* Dynamic Hover Play Hint: Hide it if the video is broken */}
+        {!videoError && (
+          <div
             style={{
-              fontSize: 9,
-              color: "rgba(255,255,255,0.5)",
-              letterSpacing: "0.06em",
+              position: "absolute",
+              bottom: 14,
+              right: 14,
+              zIndex: 4,
+              background: "rgba(0,0,0,0.55)",
+              borderRadius: 5,
+              padding: "3px 8px",
             }}
           >
-            ▶ hover
-          </span>
-        </div>
+            <span
+              style={{
+                fontSize: 9,
+                color: "rgba(255,255,255,0.5)",
+                letterSpacing: "0.06em",
+              }}
+            >
+              ▶ hover
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -520,7 +606,8 @@ export default function ProjectsPage() {
             }}
           >
             Software built over 6+ years — from point-of-sale systems to
-            clinical AI tools. Hover any card to watch it in action.
+            clinical AI tools.
+            {/* Hover any card to watch it in action. */}
           </p>
         </div>
 
